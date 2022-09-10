@@ -42,16 +42,17 @@ class Circle {
         m.fill()
     }
 
-    simulate(dt = 10) {
+    simulate(dt = 2) {
         //integrate physics
         //linear 
         this.forces = new Vector(horizontal, vertical)
         this.acceleration = this.forces.div(this.mass).mult(dt)
         this.velocity.add(this.acceleration).mult(dt)
         this.position.add(this.velocity).mult(dt)
+	      this.position.x = ((this.position.x % 800) + 800) % 800
+	      this.position.y = ((this.position.y % 800) + 800) % 800
         this.forces = new Vector(0, 0)
-
-
+        //((x % n) + n) % n          MODULO BUG
         /*angular
         this.angAcc = this.torque / this.inertia
         this.angle_vel += this.angAcc * dt
