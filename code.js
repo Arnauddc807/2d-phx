@@ -19,6 +19,9 @@ class Vector {
         this.y /= a
         return new Vector(this.x, this.y)
     }
+    size() {
+      return Math.sqrt(this.x*this.x + this.y*this.y)
+    }
 }
 
 class Circle {
@@ -38,6 +41,7 @@ class Circle {
     drawCircle() {
         m.fillStyle = this.c
         m.beginPath()
+        //m.arc(this.position.x, this.position.y, this.r, 0, 2*Math.PI)
         m.arc(this.position.x, this.position.y, this.r, 0, 2*Math.PI)
         m.fill()
     }
@@ -48,10 +52,14 @@ class Circle {
         this.forces = new Vector(horizontal, vertical)
         this.acceleration = this.forces.div(this.mass).mult(dt)
         this.velocity.add(this.acceleration).mult(dt)
+        this.velocity = this.velocity.mult(0.99)
+        if (this.velocity.size() < 0.1) { this.velocity = new Vector(0, 0) }        
         this.position.add(this.velocity).mult(dt)
 	      this.position.x = ((this.position.x % 800) + 800) % 800
 	      this.position.y = ((this.position.y % 800) + 800) % 800
         this.forces = new Vector(0, 0)
+
+
         //((x % n) + n) % n          MODULO BUG
         /*angular
         this.angAcc = this.torque / this.inertia
@@ -67,9 +75,10 @@ class Circle {
 
 //start program
 m = document.getElementById("canvas").getContext('2d')
-
+let friction = 0.1
 c1 = new Circle(400, 400, 25, "blue")
 c2 = new Circle(300, 400, 20, "green")
+hud = new Circle(700, 700, 30, "white")
 
 //keyboard controls
 let leftHeld = false
@@ -123,6 +132,22 @@ document.addEventListener("keyup", (e) => {
     }
 })
 
+//input overlay
+function Hud() {
+  m.strokeStyle = "white"
+  m.lineWidth = 3
+  m.beginPath()
+  m.arc(hud.position.x, hud.position.y, hud.r, 0, 2*Math.PI)
+  m.stroke()
+
+  m.beginPath();
+  m.moveTo(hud.position.x, hud.position.y);
+  m.lineTo(hud.position.x+c1.velocity.x, hud.position.y+c1.velocity.y);
+  m.strokeStyle = "red";
+  m.stroke();
+
+}
+
 //keyboard input
 function InputHandler() {
     horizontal = 0
@@ -155,9 +180,10 @@ function update() {
     //draw frame
     InputHandler()
     c1.simulate()
-    c2.simulate()
+    //c2.simulate()
     c1.drawCircle()
-    c2.drawCircle()
+    //c2.drawCircle()
+    Hud()
     //draw to the screen
     requestAnimationFrame(update)
 }
