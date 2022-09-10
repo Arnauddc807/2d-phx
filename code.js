@@ -76,9 +76,6 @@ class Circle {
     this.forces = new Vector(horizontal, vertical)
     }
 
-
-
-
 }
 
 //get keypresses down
@@ -133,8 +130,6 @@ function Hud() {
 
 }
 
-
-
 function collision_detection(c1, c2) {
   if (c1.position.sub(c2.position).size() <= c1.r + c2.r) {
     return true
@@ -155,11 +150,11 @@ function penetration(c1, c2) {
 function response(c1, c2) {
   normal = c1.position.sub(c2.position).unit()
   relVelocity = c1.velocity.sub(c2.velocity)
-  sepVelocity = relVelocity.dot(normal) * elasticity
+  sepVelocity = relVelocity.dot(normal) * elasticity / (c1.mass + c2.mass)
   sepVelocityVec = normal.mult(-sepVelocity)
 
-  c1.velocity = c1.velocity.add(sepVelocityVec)
-  c2.velocity = c2.velocity.add(sepVelocityVec.mult(-1))
+  c1.velocity = c1.velocity.add(sepVelocityVec.mult(c2.mass))
+  c2.velocity = c2.velocity.add(sepVelocityVec.mult(-1).mult(c1.mass))
 }
 
 //keyboard input
@@ -183,7 +178,6 @@ function InputHandler() {
 
 }
 
-
 function TotalEnergy() {
   result = 0
   for (let i = 0; i < BALLS.length; i++) {
@@ -196,31 +190,23 @@ function TotalEnergy() {
   return result
 }
 
-
-
-
-
-
-
-
 //start program
 let m = document.getElementById("canvas").getContext('2d')
 let friction = 0.005
 let elasticity = 0.99
 let BALLS = []
-BALLS.push(new Circle(400, 400, 25, "blue"))
-BALLS.push(new Circle(300, 400, 25, "green"))
-BALLS.push(new Circle(700, 400, 25, "orange"))
-BALLS.push(new Circle(500, 500, 25, "yellow"))
+BALLS.push(new Circle(400, 700, 50, "blue"))
+//BALLS.push(new Circle(300, 400, 25, "green"))
+//BALLS.push(new Circle(700, 400, 25, "orange"))
+//BALLS.push(new Circle(500, 500, 25, "yellow"))
 BALLS[0].player = true
 let hud = new Circle(700, 700, 30, "white")
 
 
-for (let i = 0; i < 5; i++) {
-  for (let j = 0; j < 5; j++)
-    BALLS.push(new Circle(i*100+100, j*100+100, 25, "pink"))
+for (let i = 0; i < 7; i++) {
+  for (let j = 0; j < 7; j++)
+    BALLS.push(new Circle(i*100+50, j*100+50, 25, "pink"))
 }
-
 
 //keyboard controls
 let leftHeld = false
@@ -237,9 +223,6 @@ let brakes = 0 //0 is no brakes, 1 is full brakes
 */
 let horizontal = 0 // -1 is left 1 is right
 let vertical = 0 // -1 is up 1 is down
-
-
-
 
 
 //physics loop
