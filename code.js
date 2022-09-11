@@ -90,7 +90,10 @@ class Circle {
     user_input() { 
         this.torque = steering
         if (throttle) {
-          this.forces = this.angle_vec
+          this.forces = this.forces.add(this.angle_vec)
+        }
+        if (brakes) {
+          this.forces = this.forces.sub(this.angle_vec)
         }
         
     }
@@ -160,7 +163,7 @@ function penetration(c1, c2) {
 
     dist = c1.position.sub(c2.position)
     dept = c1.r + c2.r - dist.size()
-    res = dist.unit()
+    res = dist.unit().mult(dept/2)
 
     c1.position = c1.position.add(res)
     c2.position = c2.position.add(res.mult(-1))
