@@ -198,14 +198,24 @@ function TotalEnergy() {
     for (let i = 0; i < BALLS.length; i++) {
         result += BALLS[i].velocity.size()
     }
-    m.font = "20px Arial";
-    m.fillStyle = "white";
+    m.font = "20px Arial"
+    m.fillStyle = "white"
     rounded = Math.round(result * 100) / 100
-    m.fillText("TOTAL ENERGY: " + rounded, 25, 725);
+    m.fillText("TOTAL ENERGY: " + rounded, 25, 725)
     return result
 }
 
+function DisplayFPS(t0, t1) {
+    fps = 1000/(t1-t0)
+    fps = Math.round(fps)
+    m.font = "12px Arial"
+    m.fillStyle = "white"
+    m.fillText("FPS: " + fps, 12, 25)
+    return fps
+}
+
 //start program
+t0 = performance.now()
 let m = document.getElementById("canvas").getContext('2d')
 let friction = 0.005
 let elasticity = 0.99
@@ -271,6 +281,11 @@ function update() {
     Hud()
     TotalEnergy()
 
+
+    //last stap
+    t1 = performance.now()
+    DisplayFPS(t0, t1)
+    t0 = t1
     //draw to the screen
     requestAnimationFrame(update)
 }
